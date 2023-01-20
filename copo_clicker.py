@@ -17,7 +17,8 @@ def click_event(event, x, y, flags, param):
 
     # L/R click pair
     if event == cv2.EVENT_LBUTTONDOWN:
-        saveL[counter] = [x, y]
+        if not (flags & cv2.EVENT_FLAG_ALTKEY) and not (flags & cv2.EVENT_FLAG_CTRLKEY):
+            saveL[counter] = [x, y]
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(img, str(x) + ',' +
                     str(y), (x, y), font,
@@ -26,7 +27,8 @@ def click_event(event, x, y, flags, param):
         cv2.imshow('image', img)
 
     if event == cv2.EVENT_RBUTTONDOWN:
-        saveR[counter] = [x, y]
+        if not (flags & cv2.EVENT_FLAG_ALTKEY) and not (flags & cv2.EVENT_FLAG_CTRLKEY):
+            saveR[counter] = [x, y]
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(img, str(x) + ',' +
                     str(y), (x, y), font,
@@ -36,7 +38,7 @@ def click_event(event, x, y, flags, param):
 
     # ALT L/ ALT R pair
     if event == cv2.EVENT_LBUTTONDOWN and (flags & cv2.EVENT_FLAG_ALTKEY):
-        saveAR[counter] = [x, y]
+        saveAL[counter] = [x, y]
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(img, str(x) + ',' +
                     str(y), (x, y), font,
@@ -45,7 +47,7 @@ def click_event(event, x, y, flags, param):
         cv2.imshow('image', img)
 
     if event == cv2.EVENT_RBUTTONDOWN and (flags & cv2.EVENT_FLAG_ALTKEY):
-        saveAL[counter] = [x, y]
+        saveAR[counter] = [x, y]
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(img, str(x) + ',' +
                     str(y), (x, y), font,
@@ -55,7 +57,7 @@ def click_event(event, x, y, flags, param):
 
     # CTRL L / CTRL R pair
     if event == cv2.EVENT_LBUTTONDOWN and (flags & cv2.EVENT_FLAG_CTRLKEY):
-        saveCR[counter] = [x, y]
+        save_CL[counter] = [x, y]
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(img, str(x) + ',' +
                     str(y), (x, y), font,
@@ -64,7 +66,7 @@ def click_event(event, x, y, flags, param):
         cv2.imshow('image', img)
 
     if event == cv2.EVENT_RBUTTONDOWN and (flags & cv2.EVENT_FLAG_CTRLKEY):
-        saveCL[counter] = [x, y]
+        save_CR[counter] = [x, y]
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(img, str(x) + ',' +
                     str(y), (x, y), font,
@@ -99,6 +101,8 @@ def open_img(pfad, name):
     cv2.setMouseCallback('image', click_event)
     k = cv2.waitKey(0)
     cv2.imwrite(f'{pfad}/temp.jpg', img)
+    if counter == 1:
+        cv2.imwrite(f'{pfad}/first_annot.jpg', img)
     cv2.destroyAllWindows()
 
     if k == ord('a'):
@@ -112,8 +116,8 @@ if __name__ == '__main__':
     saveR = {}
     saveAL = {}
     saveAR = {}
-    saveCL = {}
-    saveCR = {}
+    save_CL = {}
+    save_CR = {}
 
     counter = 1
 
@@ -125,8 +129,8 @@ if __name__ == '__main__':
         saveR[counter] = ('Na', 'Na')
         saveAL[counter] = ('Na', 'Na')
         saveAR[counter] = ('Na', 'Na')
-        saveCL[counter] = ('Na', 'Na')
-        saveCR[counter] = ('Na', 'Na')
+        save_CL[counter] = ('Na', 'Na')
+        save_CR[counter] = ('Na', 'Na')
         if open_img(p, i) == 'exit':
             break
         counter += 1
@@ -135,14 +139,15 @@ if __name__ == '__main__':
     s = Path(save_dir)
     os.chdir(s)
     name = p.name
-    names = ['x1', 'y1', 'x2', 'y2', 'x3', 'y3', 'x4', 'y4', 'x5', 'y5', 'x6', 'y6']
+    names = ['blue_x', 'blue_y', 'lightblue_x', 'lightblue_y', 'green_x', 'green_y',
+             'darkgreen_x', 'darkgreen_y', 'purple_x', 'purple_y', 'red_x', 'red_y']
     outL = pd.DataFrame.from_dict(data=saveL, orient='index')
     outR = pd.DataFrame.from_dict(data=saveR, orient='index')
     outAL = pd.DataFrame.from_dict(data=saveAL, orient='index')
     outAR = pd.DataFrame.from_dict(data=saveAR, orient='index')
-    outCL = pd.DataFrame.from_dict(data=saveCL, orient='index')
-    outCR = pd.DataFrame.from_dict(data=saveCR, orient='index')
+    outCL = pd.DataFrame.from_dict(data=save_CL, orient='index')
+    outCR = pd.DataFrame.from_dict(data=save_CR, orient='index')
     out = pd.concat([outL, outR, outAL, outAR, outCL, outCR], axis=1)
     out.to_csv(f'{name}.csv', header=names)
     print(f'{name}.csv has been saved in {save_dir}')
-
+    os.remove(f'{p}/temp.jpg')
