@@ -3,8 +3,9 @@ import pandas as pd
 import cv2
 from unipath import Path
 
+
 # directory where the pictures are
-pic_dir = r'C:\Users\jonas\Documents\Uni\FTZ\copo\pics'
+pic_dir = r'C:\Users\jonas\Documents\Uni\FTZ\copo\5thShot\13_5_L'
 # directory where the finished csv file should end up
 save_dir = r'C:\Users\jonas\Documents\Uni\FTZ\copo\ergeb'
 
@@ -76,6 +77,10 @@ def open_img(pfad, name):
     global img
     img = cv2.imread(f"{pfad}/{name}", 1)
 
+    if not counter == 1:
+        img_old = cv2.imread(f'{pfad}/temp.jpg')
+        cv2.imshow('old', img_old)
+
     font = cv2.FONT_HERSHEY_SIMPLEX
     cv2.putText(img,
                 str(counter),
@@ -92,9 +97,10 @@ def open_img(pfad, name):
     cv2.imshow('image', img)
 
     cv2.setMouseCallback('image', click_event)
-
     k = cv2.waitKey(0)
+    cv2.imwrite(f'{pfad}/temp.jpg', img)
     cv2.destroyAllWindows()
+
     if k == ord('a'):
         return 'exit'
 
@@ -121,7 +127,6 @@ if __name__ == '__main__':
         saveAR[counter] = ('Na', 'Na')
         saveCL[counter] = ('Na', 'Na')
         saveCR[counter] = ('Na', 'Na')
-
         if open_img(p, i) == 'exit':
             break
         counter += 1
@@ -140,6 +145,4 @@ if __name__ == '__main__':
     out = pd.concat([outL, outR, outAL, outAR, outCL, outCR], axis=1)
     out.to_csv(f'{name}.csv', header=names)
     print(f'{name}.csv has been saved in {save_dir}')
-
-
 
