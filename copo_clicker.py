@@ -122,7 +122,9 @@ if __name__ == '__main__':
     counter = 1
 
     for pics in p.listdir():
-        pic_list.append(str(pics.name))
+        if pics.ext == '.jpg':
+            pic_list.append(str(pics.name))
+
 
     for i in pic_list:
         saveL[counter] = ('Na', 'Na')
