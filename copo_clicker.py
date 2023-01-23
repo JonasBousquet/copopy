@@ -95,7 +95,7 @@ def open_img(pfad, name):
     cv2.putText(img, 'ALT+L BUTTON', (184, 511), font, 0.5, (0, 255, 0), 2)
     cv2.putText(img, 'ALT+R BUTTON', (306, 511), font, 0.5, (9, 99, 9), 2)
     cv2.putText(img, 'CTRL+L BUTTON', (429, 511), font, 0.5, (189, 3, 154), 2)
-    cv2.putText(img, 'CTRL+R BUTTON', (562, 511), font, 0.5, (0, 0, 255), 2)
+    cv2.putText(img, 'CTRL+R BUTTON (Kontroll-fussel)', (562, 511), font, 0.5, (0, 0, 255), 2)
     cv2.imshow('image', img)
 
     cv2.setMouseCallback('image', click_event)
